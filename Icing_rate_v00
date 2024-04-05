@@ -1,0 +1,66 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Sun Mar 31 15:14:21 2024
+
+@author: HP
+"""
+
+def icing_accretion_rate(alpha1, alpha2, alpha3, omega, wind_speed):
+    """
+    Calculate the icing accretion rate using the Makkonen model.
+    
+    Parameters:
+    alpha1 (float): Collision efficiency
+    alpha2 (float): Sticking efficiency
+    alpha3 (float): Freezing efficiency
+    omega (float): Liquid water content (g/m³)
+    wind_speed (float): Wind speed (m/s)
+    
+    Returns:
+    float: Icing accretion rate (g/h)
+    """
+    return alpha1 * alpha2 * alpha3 * omega * wind_speed
+
+def icing_alteration_coefficients(time_in_icing):
+    """
+    Calculate the icing alteration coefficients for various aerodynamic derivatives.
+    
+    Parameters:
+    time_in_icing (float): Time spent in icing conditions (minutes)
+    
+    Returns:
+    dict: Icing alteration coefficients
+    """
+    k_cy_beta = 1 - 0.2 * (time_in_icing / 5)
+    k_cl_beta = 1 - 0.1 * (time_in_icing / 5)
+    k_cn_beta = 1 - 0.2 * (time_in_icing / 5)
+    k_cn_r = 1 - 0.061 * (time_in_icing / 5)
+    k_cm_alpha = 1 - 0.099 * (time_in_icing / 5)
+    k_cl_delta_e = 1 - 0.1 * (time_in_icing / 5)
+    k_cm_delta_e = 1 - 0.1 * (time_in_icing / 5)
+    
+    return {
+        'k_cy_beta': k_cy_beta,
+        'k_cl_beta': k_cl_beta,
+        'k_cn_beta': k_cn_beta,
+        'k_cn_r': k_cn_r,
+        'k_cm_alpha': k_cm_alpha,
+        'k_cl_delta_e': k_cl_delta_e,
+        'k_cm_delta_e': k_cm_delta_e
+    }
+
+def modified_lift_and_drag(angle_of_attack, time_in_icing):
+    """
+    Calculate the modified lift and drag coefficients due to icing.
+    
+    Parameters:
+    angle_of_attack (float): Angle of attack (degrees)
+    time_in_icing (float): Time spent in icing conditions (minutes)
+    
+    Returns:
+    tuple: (modified_lift_coefficient, modified_drag_coefficient)
+    """
+    k_d = 1 + 0.0025 * angle_of_attack**2 * (1 - 0.2 * (time_in_icing / 5))
+    k_l = 1 - 0.0025 * angle_of_attack**2 * (1 - 0.2 * (time_in_icing / 5))
+    
+    return k_l, k_d
