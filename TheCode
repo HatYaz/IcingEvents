@@ -40,7 +40,9 @@ def calculate_icing(values):
         result_text += f"\nModified lift coefficient (k_l): {lift_coefficient:.2f}\n"
         result_text += f"Modified drag coefficient (k_d): {drag_coefficient:.2f}\n"
 
-        window['-OUTPUT-'].update(result_text)
+        # Update Multiline element
+        output_element = window.FindElement('-OUTPUT-')
+        output_element.Update(value=result_text)
 
     except ValueError:
         sg.popup_error("Please enter valid numeric values.")
@@ -61,12 +63,15 @@ layout = [
     
     [sg.Text('Omega (Liquid water content in g/m³):', size=(28, 1)),
      sg.Input(key='-OMEGA-', size=(10, 1)), 
-     sg.Text('Typical Range: 0.1 to 10 g/m³', size=(20, 1), text_color='black')],
+     sg.Text('Typical Range: 0.1 to 10 g/m³', size=(25, 1), text_color='black')],
     
     [sg.Text('Wind Speed (m/s):', size=(28, 1)), 
      sg.Input(key='-WIND_SPEED-', size=(10, 1)),
      sg.Text('Typical Range: 7 to 25 m/s', size=(20, 1), text_color='black')],
-    [sg.Text('Angle of Attack (wind direction in deg.):', size=(28, 1)), sg.Input(key='-ANGLE_OF_ATTACK-', size=(10, 1))],
+
+    [sg.Text('Angle of Attack (wind direction in deg.):', size=(28, 1)),
+      sg.Input(key='-ANGLE_OF_ATTACK-', size=(10, 1)),
+      sg.Text('Typical Range: 0 to 360 deg.', size=(25, 1), text_color='black')],
     [sg.Text('Time in Icing (min):', size=(28, 1)), sg.Input(key='-TIME_IN_ICING-', size=(10, 1))],
     [sg.Button('Calculate', bind_return_key=True), sg.Button('Exit')],
     [sg.Multiline(size=(60, 15), key='-OUTPUT-', disabled=True)],
@@ -74,14 +79,14 @@ layout = [
 ]
 
 # Create the window
-window = sg.Window('Icing Calculator', layout, resizable=True, finalize=True)
+window = sg.Window('Icing Calculator', layout, resizable=True)
 
 # Event loop
 while True:
-    event, values = window.read()
-    if event == sg.WINDOW_CLOSED or event == 'Exit':
+    event, values = window.Read()  # Change 'read()' to 'Read()'
+    if event == 'CLOSE' or event == 'Exit':  # Change 'sg.WIN_CLOSED' to 'CLOSE'
         break
     elif event == 'Calculate':
         calculate_icing(values)
 
-window.close()
+window.Close()
