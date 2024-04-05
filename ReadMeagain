@@ -1,0 +1,23 @@
+This Python script creates a simple GUI application for calculating icing-related parameters for wind turbines. Here's a breakdown of what the code does:
+
+It imports the PySimpleGUI library, a Python GUI framework, and some functions from another script named Icing_rate_v00.
+
+It defines a function calculate_icing(values) that performs the actual icing calculations based on the input values provided by the user through the GUI.
+
+The layout of the GUI is defined using a list called layout. It contains various input fields for different parameters related to icing, such as alpha values, wind speed, angle of attack, time in icing, etc. It also includes buttons for calculation and exit, as well as a text box for displaying the results.
+
+It creates a GUI window using PySimpleGUI's sg.Window() function, with the title "Icing Calculator" and the defined layout.
+
+It enters an event loop where it waits for user interactions with the GUI window.
+
+If the user closes the window or clicks the "Exit" button, the program breaks out of the event loop and closes the window.
+
+If the user clicks the "Calculate" button, it calls the calculate_icing(values) function with the current input values obtained from the GUI.
+
+Inside calculate_icing(values), it extracts the input values, performs icing calculations using functions imported from Icing_rate_v00, formats the result text, and updates the output text box in the GUI window.
+
+If any of the input values provided by the user are not numeric, it displays an error message using PySimpleGUI's sg.popup_error() function.
+
+Finally, when the GUI window is closed or the user clicks the "Exit" button, the program closes the window.
+
+This script essentially provides a user-friendly interface for performing icing calculations related to wind turbines.
