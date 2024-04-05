@@ -1,0 +1,87 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Sun Mar 31 15:50:28 2024
+pyinstaller --noconsole your_script.py
+The Makkonen mode
+@author: Hatem Yazidi
+@Email: hatem.yazidi@gazeol.com
+"""
+
+import PySimpleGUI as sg
+
+# Importing functions from your code
+from Icing_rate_v00 import (
+    icing_accretion_rate,
+    icing_alteration_coefficients,
+    modified_lift_and_drag
+)
+
+def calculate_icing(values):
+    try:
+        # Extract values from input fields
+        alpha1 = float(values['-ALPHA1-'])
+        alpha2 = float(values['-ALPHA2-'])
+        alpha3 = float(values['-ALPHA3-'])
+        omega = float(values['-OMEGA-'])
+        wind_speed = float(values['-WIND_SPEED-'])
+        time_in_icing = float(values['-TIME_IN_ICING-'])
+        angle_of_attack = float(values['-ANGLE_OF_ATTACK-'])
+
+        # Perform icing calculations
+        icing_rate = icing_accretion_rate(alpha1, alpha2, alpha3, omega, wind_speed)
+        icing_coefficients = icing_alteration_coefficients(time_in_icing)
+        lift_coefficient, drag_coefficient = modified_lift_and_drag(angle_of_attack, time_in_icing)
+
+        # Format result text
+        result_text = f"Icing accretion rate: {icing_rate:.2f} (g/h)\n\n"
+        result_text += "Icing alteration coefficients:\n"
+        for key, value in icing_coefficients.items():
+            result_text += f"{key}: {value:.2f}\n"
+        result_text += f"\nModified lift coefficient (k_l): {lift_coefficient:.2f}\n"
+        result_text += f"Modified drag coefficient (k_d): {drag_coefficient:.2f}\n"
+
+        window['-OUTPUT-'].update(result_text)
+
+    except ValueError:
+        sg.popup_error("Please enter valid numeric values.")
+
+# Define the layout
+layout = [
+    [sg.Text('Alpha1 (Collision efficiency):', size=(28, 1)),
+     sg.Input(key='-ALPHA1-', size=(10, 1)),
+     sg.Text('Typical Range: 0.5 to 0.9', size=(20, 1), text_color='black')],
+    
+    [sg.Text('Alpha2 (Sticking efficiency):', size=(28, 1)),
+     sg.Input(key='-ALPHA2-', size=(10, 1)),
+     sg.Text('Typical Range: 0.3 to 0.8', size=(20, 1), text_color='black')],
+    
+    [sg.Text('Alpha3 (Freezing efficiency):', size=(28, 1)),
+     sg.Input(key='-ALPHA3-', size=(10, 1)),
+     sg.Text('Typical Range: 0.5 to 0.9', size=(20, 1), text_color='black')],
+    
+    [sg.Text('Omega (Liquid water content in g/m³):', size=(28, 1)),
+     sg.Input(key='-OMEGA-', size=(10, 1)), 
+     sg.Text('Typical Range: 0.1 to 10 g/m³', size=(20, 1), text_color='black')],
+    
+    [sg.Text('Wind Speed (m/s):', size=(28, 1)), 
+     sg.Input(key='-WIND_SPEED-', size=(10, 1)),
+     sg.Text('Typical Range: 7 to 25 m/s', size=(20, 1), text_color='black')],
+    [sg.Text('Angle of Attack (wind direction in deg.):', size=(28, 1)), sg.Input(key='-ANGLE_OF_ATTACK-', size=(10, 1))],
+    [sg.Text('Time in Icing (min):', size=(28, 1)), sg.Input(key='-TIME_IN_ICING-', size=(10, 1))],
+    [sg.Button('Calculate', bind_return_key=True), sg.Button('Exit')],
+    [sg.Multiline(size=(60, 15), key='-OUTPUT-', disabled=True)],
+    [sg.Text('© GazEol Renouvelable 2024', justification='center', size=(60, 1))]
+]
+
+# Create the window
+window = sg.Window('Icing Calculator', layout, resizable=True, finalize=True)
+
+# Event loop
+while True:
+    event, values = window.read()
+    if event == sg.WINDOW_CLOSED or event == 'Exit':
+        break
+    elif event == 'Calculate':
+        calculate_icing(values)
+
+window.close()
